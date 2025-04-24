@@ -14,154 +14,205 @@ allInputsFromPizza.forEach(function (input) {
     input.addEventListener("click", (event) => {
         if (event.target.id === "small") {
             pizza.cacke.price = 56.32;
-            pizza.cacke.type = event.target.id
+            pizza.cacke.type = event.target.id;
         } else if (event.target.id === "mid") {
             pizza.cacke.price = 89.34;
-            pizza.cacke.type = event.target.id
+            pizza.cacke.type = event.target.id;
         } else if (event.target.id === "big") {
             pizza.cacke.price = 105;
-            pizza.cacke.type = event.target.id
+            pizza.cacke.type = event.target.id;
         } else {
-            throw new Error("Вы укразли какой-то другой корж")
+            throw new Error("Вы указали какой-то другой корж");
         }
-        count(pizza)
-        showPrice(pizza.price)
-    })
-})
+        count(pizza);
+        showPrice(pizza.price);
+    });
+});
 
 ingridients.addEventListener("click", (e) => {
-    if(pizza.cacke.price === undefined){
-        showError("Вы дожны сначала выбрать кож и только потом Вы можете выбрать ингридитенты")
-        return
+    if (pizza.cacke.price === undefined) {
+        showError("Вы должны сначала выбрать корж и только потом можете выбрать ингредиенты");
+        return;
     }
     if (e.target.id === "sauceClassic") {
-        pizza.sauces.push({
-            price: 78.43,
-            type: "Кетчуп",
-            img: e.target.src
-        })
+        addIngredient(pizza.sauces, "Кетчуп", 78.43, e.target.src);
     } else if (e.target.id === "sauceBBQ") {
-        pizza.sauces.push({
-            price: 99.43,
-            type: "BBQ",
-            img: e.target.src
-        })
+        addIngredient(pizza.sauces, "BBQ", 99.43, e.target.src);
     } else if (e.target.id === "sauceRikotta") {
-        pizza.sauces.push({
-            price: 120.94,
-            type: "Рiкотта",
-            img: e.target.src
-        })
+        addIngredient(pizza.sauces, "Рiкотта", 120.94, e.target.src);
     } else if (e.target.id === "moc1") {
-        pizza.toppings.push({
-            price: 54,
-            type: "Сир звичайний",
-            img: e.target.src
-        })
+        addIngredient(pizza.toppings, "Сир звичайний", 54, e.target.src);
     } else if (e.target.id === "moc2") {
-        pizza.toppings.push({
-            price: 98,
-            type: "Сир фета",
-            img: e.target.src
-        })
+        addIngredient(pizza.toppings, "Сир фета", 98, e.target.src);
     } else if (e.target.id === "moc3") {
-        pizza.toppings.push({
-            price: 125.94,
-            type: "Моцарелла",
-            img: e.target.src
-        })
+        addIngredient(pizza.toppings, "Моцарелла", 125.94, e.target.src);
     } else if (e.target.id === "telya") {
-        pizza.toppings.push({
-            price: 111,
-            type: "Телятина",
-            img: e.target.src
-        })
+        addIngredient(pizza.toppings, "Телятина", 111, e.target.src);
     } else if (e.target.id === "vetch1") {
-        pizza.toppings.push({
-            price: 94,
-            type: "Помiдори",
-            img: e.target.src
-        })
+        addIngredient(pizza.toppings, "Помiдори", 94, e.target.src);
     } else if (e.target.id === "vetch2") {
-        pizza.toppings.push({
-            price: 94,
-            type: "Гриби",
-            img: e.target.src
-        })
+        addIngredient(pizza.toppings, "Гриби", 94, e.target.src);
     }
 
-    sauce.innerHTML = "";
-    topping.innerHTML = "";
-    cacke.innerHTML = `<img src="Pizza_pictures/klassicheskij-bortik_1556622914630.png" alt="Корж класичний">`
+    // Обновляем отображение
+    renderIngredients();
+    count(pizza);
+    showPrice(pizza.price);
+});
 
-    if (Array.isArray(pizza.sauces) && pizza.sauces.length > 0) {
-        pizza.sauces.forEach(sauce => {
-            addTopping(sauce.img)
-            addTextSauces(sauce.type)
-        })
+function addIngredient(array, type, price, img) {
+    const found = array.find(item => item.type === type);
+    if (found) {
+        found.quantity += 1;
+    } else {
+        array.push({
+            price: price,
+            type: type,
+            img: img,
+            quantity: 1
+        });
     }
-
-    if (Array.isArray(pizza.toppings) && pizza.toppings.length > 0) {
-        pizza.toppings.forEach(topping => {
-            addTopping(topping.img)
-            addTextTopping(topping.type)
-        })
-    }
-
-    count(pizza)
-    showPrice(pizza.price)
-})
+}
 
 function count(pizza) {
     let full_price = 0;
-    full_price = full_price + (pizza.cacke.price || 0);
-    full_price = full_price + pizza.sauces.reduce((a, c) => a + c.price, 0);
-    full_price = full_price + pizza.toppings.reduce((a, c) => a + c.price, 0);
+    full_price += pizza.cacke.price || 0;
+    full_price += pizza.sauces.reduce((a, c) => a + c.price * c.quantity, 0);
+    full_price += pizza.toppings.reduce((a, c) => a + c.price * c.quantity, 0);
     pizza.price = full_price;
     return pizza;
 }
-// price.reduce(function (accumulator, current) {return accumulator + current}, 0);
+
+function renderIngredients() {
+    sauce.innerHTML = "";
+    topping.innerHTML = "";
+    cacke.innerHTML = `<img src="Pizza_pictures/klassicheskij-bortik_1556622914630.png" alt="Корж класичний">`;
+
+    // Отображаем соусы
+    pizza.sauces.forEach(s => {
+        addTopping(s.img);
+        addTextSauces(s.type, s.quantity);
+    });
+
+    // Отображаем топпинги
+    pizza.toppings.forEach(t => {
+        addTopping(t.img);
+        addTextTopping(t.type, t.quantity);
+    });
+}
 
 function addTopping(src) {
     const img = document.createElement("img");
     img.src = src;
-    cacke.append(img)
+    cacke.append(img);
 }
 
-function addTextSauces(name) {
+function addTextSauces(name, quantity) {
     const newSauce = document.createElement("span");
     newSauce.classList.add("new-topping");
-    newSauce.innerText = name;
+    newSauce.innerText = `${name} x${quantity}`;
     const deleteIcon = document.createElement("span");
-    deleteIcon.innerText = "❌"
-    newSauce.append(deleteIcon)
-    sauce.append(newSauce)
+    deleteIcon.innerText = "❌";
+    deleteIcon.addEventListener("click", () => removeIngredient(name, pizza.sauces));
+    newSauce.append(deleteIcon);
+    sauce.append(newSauce);
 }
 
-function addTextTopping(name) {
+function addTextTopping(name, quantity) {
     const newTopping = document.createElement("span");
-    const deleteIcon = document.createElement("span");
     newTopping.classList.add("new-topping");
-    newTopping.innerText = name;
-    topping.append(newTopping)
-    deleteIcon.innerText = "❌"
-    newTopping.append(deleteIcon)
+    newTopping.innerText = `${name} x${quantity}`;
+    const deleteIcon = document.createElement("span");
+    deleteIcon.innerText = "❌";
+    deleteIcon.addEventListener("click", () => removeIngredient(name, pizza.toppings));
+    newTopping.append(deleteIcon);
+    topping.append(newTopping);
 }
+
+function removeIngredient(name, array) {
+    const ingredient = array.find(item => item.type === name);
+    if (ingredient) {
+        if (ingredient.quantity > 1) {
+            // Если количество больше 1, просто уменьшаем на 1
+            ingredient.quantity -= 1;
+        } else {
+            // Если количество 1, удаляем ингредиент из массива
+            const index = array.indexOf(ingredient);
+            array.splice(index, 1);
+        }
+    }
+    renderIngredients();
+    count(pizza);
+    showPrice(pizza.price);
+}
+
 
 function showPrice(price = 0) {
-    document.getElementById("price").innerText = price.toFixed(2)
+    document.getElementById("price").innerText = price.toFixed(2);
 }
 
-function  showError (text = "У Вас возникла какая-то плохая ситуация 😭") {
-const error_modal = document.querySelector(".error_modal");
-const textSpan = document.querySelector("#error-text");
-textSpan.innerText = text;
-error_modal.classList.add("show");
-setTimeout(()=>{
-    error_modal.classList.remove("show");  
-}, 5000)
+function showError(text = "У Вас возникла какая-то ошибка 😭") {
+    const error_modal = document.querySelector(".error_modal");
+    const textSpan = document.querySelector("#error-text");
+    textSpan.innerText = text;
+    error_modal.classList.add("show");
+    setTimeout(() => {
+        error_modal.classList.remove("show");
+    }, 5000);
 }
 
+showPrice();
 
+document.getElementById("btnSubmit").addEventListener("click", function(event) {
+    // Сбрасываем все старые ошибки
+    clearErrors();
 
-showPrice()
+    // Получаем значения из формы
+    const name = document.querySelector('input[name="name"]').value;
+    const phone = document.querySelector('input[name="phone"]').value;
+    const email = document.querySelector('input[name="email"]').value;
+
+    let isValid = true;
+
+    // Проверка имени
+    if (name.trim() === "") {
+        showError("name", "Будь ласка, введіть ваше ім'я");
+        isValid = false;
+    }
+
+    // Проверка телефона (с использованием регулярного выражения)
+    const phonePattern = /^\+380\d{9}$/; // Проверка на формат +380*********
+    if (!phone.match(phonePattern)) {
+        showError("phone", "Будь ласка, введіть коректний номер телефону (+380*********)");
+        isValid = false;
+    }
+
+    // Проверка email
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!email.match(emailPattern)) {
+        showError("email", "Будь ласка, введіть коректну електронну пошту");
+        isValid = false;
+    }
+
+    // Если форма валидна, можем отправить данные или выполнить другие действия
+    if (isValid) {
+        alert("Форма успішно відправлена!");
+        // Здесь можно выполнить отправку формы или другие действия
+    }
+});
+
+function showError(field, message) {
+    const inputField = document.querySelector(`input[name="${field}"]`);
+    const errorMessage = document.createElement("span");
+    errorMessage.classList.add("error");
+    errorMessage.innerText = message;
+    inputField.parentElement.appendChild(errorMessage);
+}
+
+function clearErrors() {
+    // Удаляем все сообщения об ошибках
+    const errorMessages = document.querySelectorAll(".error");
+    errorMessages.forEach(function(error) {
+        error.remove();
+    });
+}

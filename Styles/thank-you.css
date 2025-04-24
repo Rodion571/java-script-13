@@ -34,3 +34,16 @@ a {
     border-radius: 10px;
     text-decoration: none;
 }
+.error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+input:invalid {
+    border-color: red;
+}
+
+input:valid {
+    border-color: green;
+}
