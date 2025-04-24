@@ -30,7 +30,7 @@ allInputsFromPizza.forEach(function (input) {
 });
 
 ingridients.addEventListener("click", (e) => {
-    if (pizza.cacke.price === undefined) {
+    if (!pizza.cacke.price === undefined) {
         showError("Вы должны сначала выбрать корж и только потом можете выбрать ингредиенты");
         return;
     }
@@ -54,7 +54,7 @@ ingridients.addEventListener("click", (e) => {
         addIngredient(pizza.toppings, "Гриби", 94, e.target.src);
     }
 
-    // Обновляем отображение
+    
     renderIngredients();
     count(pizza);
     showPrice(pizza.price);
@@ -88,13 +88,13 @@ function renderIngredients() {
     topping.innerHTML = "";
     cacke.innerHTML = `<img src="Pizza_pictures/klassicheskij-bortik_1556622914630.png" alt="Корж класичний">`;
 
-    // Отображаем соусы
+    
     pizza.sauces.forEach(s => {
         addTopping(s.img);
         addTextSauces(s.type, s.quantity);
     });
 
-    // Отображаем топпинги
+    
     pizza.toppings.forEach(t => {
         addTopping(t.img);
         addTextTopping(t.type, t.quantity);
@@ -133,10 +133,10 @@ function removeIngredient(name, array) {
     const ingredient = array.find(item => item.type === name);
     if (ingredient) {
         if (ingredient.quantity > 1) {
-            // Если количество больше 1, просто уменьшаем на 1
+            
             ingredient.quantity -= 1;
         } else {
-            // Если количество 1, удаляем ингредиент из массива
+            
             const index = array.indexOf(ingredient);
             array.splice(index, 1);
         }
@@ -164,40 +164,38 @@ function showError(text = "У Вас возникла какая-то ошибк
 showPrice();
 
 document.getElementById("btnSubmit").addEventListener("click", function(event) {
-    // Сбрасываем все старые ошибки
+    
     clearErrors();
-
-    // Получаем значения из формы
+    
     const name = document.querySelector('input[name="name"]').value;
     const phone = document.querySelector('input[name="phone"]').value;
     const email = document.querySelector('input[name="email"]').value;
 
     let isValid = true;
 
-    // Проверка имени
+    
     if (name.trim() === "") {
         showError("name", "Будь ласка, введіть ваше ім'я");
         isValid = false;
     }
 
-    // Проверка телефона (с использованием регулярного выражения)
-    const phonePattern = /^\+380\d{9}$/; // Проверка на формат +380*********
+    
+    const phonePattern = /^\+380\d{9}$/; 
     if (!phone.match(phonePattern)) {
         showError("phone", "Будь ласка, введіть коректний номер телефону (+380*********)");
         isValid = false;
     }
 
-    // Проверка email
+    
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if (!email.match(emailPattern)) {
         showError("email", "Будь ласка, введіть коректну електронну пошту");
         isValid = false;
     }
 
-    // Если форма валидна, можем отправить данные или выполнить другие действия
+    
     if (isValid) {
         alert("Форма успішно відправлена!");
-        // Здесь можно выполнить отправку формы или другие действия
     }
 });
 
@@ -210,7 +208,6 @@ function showError(field, message) {
 }
 
 function clearErrors() {
-    // Удаляем все сообщения об ошибках
     const errorMessages = document.querySelectorAll(".error");
     errorMessages.forEach(function(error) {
         error.remove();
